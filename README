@@ -1,9 +1,7 @@
 Holophrasm: a purely neural automated theorem prover for Metamath
 
-The system is sort of a mess, but it can be used in the following manner.
-I recommend having at least 64GB of RAM because it's horrendously inefficient.
-
 The program can be used in the following way.
+I recommend having at least 64GB of RAM.
 Note: this is probably all lies because it's working notes for me and may change without notice.
 
 Step 0: (OS X only) deal with Accelerate and forking bug
