@@ -1,0 +1,10 @@
+.ipynb*
+*.weights
+env/*
+weights/*
+*.ipynb
+language_model
+*.pyc
+searcher*
+lm
+payout_data*

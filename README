@@ -1,0 +1,76 @@
+Holophrasm: a purely neural automated theorem prover for Metamath
+
+The system is sort of a mess, but it can be used in the following manner.
+I recommend having at least 64GB of RAM because it's horrendously inefficient.
+
+The program can be used in the following way.
+Note: this is probably all lies because it's working notes for me and may change without notice.
+
+Step 0: (OS X only) deal with Accelerate and forking bug
+#########
+export VECLIB_MAXIMUM_THREADS=1
+#########
+
+Step 1: train gen and pred
+#########
+python script_gen.py
+python script_pred.py
+#########
+
+Step 2: set up the files for the nn interface
+#########
+mkdir searcher
+cp weights/gen/train.parameters searcher/gen.parameters
+cp weights/gen/train.weights searcher/gen.weights
+cp weights/pred/train.parameters searcher/pred.parameters
+cp weights/pred/train.weights searcher/pred.weights
+#########
+NOTE: this will fail because the searcher currently expects payout to
+already exist.  Fix that.
+
+Step 3: save a copy of the language model somewhere by running
+######### PYTHON CODE
+text = file_contents()
+database = meta_math_database(text,n=2000, remember_proof_steps=True)
+language_model = LanguageModel(database)
+# forget the training proof steps, freeing up about 10G of memory
+language_model.training_proof_steps = None
+language_model.test_proof_steps = None
+language_model.validation_proof_steps = None
+language_model.all_proof_steps = None
+for p in language_model.database.propositions_list:
+    p.entails_proof_steps = None
+with open('lm', 'wb') as handle:
+    pickle.dump(database, handle)
+#########
+
+Step 4: construct the payout data set and train the payout network
+#########
+python generate_payout_data_script.py
+python script_payout.py
+cp weights/pred/train.parameters searcher/payout.parameters
+cp weights/pred/train.weights searcher/payout.weights
+#########
+
+Step 5: run the proof search (hyp bonus should be set to 0.0 for consistency with the paper)
+#########
+python run_script_ordered.py
+#########
+
+Step 6: verify the proofs
+######### PYTHON CODE
+import write_proof
+write_proof.reset()
+write_proof.write_all_known_proofs()
+#########
+
+Step 7: copy the modified_set.mm into the metamath folder and use the following commands to verify the proofs
+######### METAMATH COMMANDS
+ERASE
+READ modified_set.mm
+VERIFY PROOF *
+#########
+
+
+There's a known bug involving outputting the proofs that assigns the same additional dummy variable to multiple set variables, breaking the disjointness condition.
+I think this is purely a problem with the proof writing, but I'm not confident, so I've excluded these proofs from my count of working proofs anyway.
