@@ -1,0 +1,16 @@
+(iwrite_proof
+Proof
+p1
+(dp2
+S'passes'
+p3
+I12
+sS'proof'
+p4
+S'wph vx SetVar5 cA cB SetVar5 cv cA wcel vx ax-17 SetVar5 cv cB wcel vx ax-17 rabeqf'
+p5
+sS'label'
+p6
+S'rabeq'
+p7
+sb.

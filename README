@@ -1,8 +1,30 @@
 Holophrasm: a purely neural automated theorem prover for Metamath
+https://arxiv.org/abs/1608.02644
 
-The program can be used in the following way.
-I recommend having at least 64GB of RAM.
-Note: this is probably all lies because it's working notes for me and may change without notice.
+To use the program, start by downloading the release, which includes the binary files for the language model and the trained model weights.  Then, from the root directory, using python 2.7, run
+
+python run_script_ordered.py
+python write_all_proofs.py
+
+run_script_ordered.py will attempt to search for proofs for all the Metamath propositions, starting with the (expected) easiest proofs search.  Reasonable parameters for running it are:
+timeout: 5
+num_passes: 10000
+search beam width: 20
+hyp bonus: 0 
+Proofs are saved to searcher/proofs as soon as they are found.  The proofs that I found during my search are in searcher/proofs_baseline.
+
+write_all_proofs.py will generate a modified_set.mm module file, which consists of the proofs from set.mm, with the found proofs replaced.  This can then be fed into Metamath and verified using the commands
+
+READ modified_set.mm
+VERIFY PROOF *
+
+There's a known bug involving outputting the proofs that assigns the same additional dummy variable to multiple set variables, breaking the disjointness condition.
+I think this is purely a problem with the proof writing, but I'm not confident, so I've excluded these proofs from my count of working proofs anyway.
+
+#############################################
+
+If you want to train from scratch, you can do the following.  I recommend having at least 64GB of RAM.
+Note: this is probably all lies these are my working notes and may change without notice.
 
 Step 0: (OS X only) deal with Accelerate and forking bug
 #########
@@ -27,19 +49,8 @@ NOTE: this will fail because the searcher currently expects payout to
 already exist.  Fix that.
 
 Step 3: save a copy of the language model somewhere by running
-######### PYTHON CODE
-text = file_contents()
-database = meta_math_database(text,n=2000, remember_proof_steps=True)
-language_model = LanguageModel(database)
-# forget the training proof steps, freeing up about 10G of memory
-language_model.training_proof_steps = None
-language_model.test_proof_steps = None
-language_model.validation_proof_steps = None
-language_model.all_proof_steps = None
-for p in language_model.database.propositions_list:
-    p.entails_proof_steps = None
-with open('lm', 'wb') as handle:
-    pickle.dump(database, handle)
+#########
+python save_language_model.py
 #########
 
 Step 4: construct the payout data set and train the payout network
@@ -68,7 +79,3 @@ ERASE
 READ modified_set.mm
 VERIFY PROOF *
 #########
-
-
-There's a known bug involving outputting the proofs that assigns the same additional dummy variable to multiple set variables, breaking the disjointness condition.
-I think this is purely a problem with the proof writing, but I'm not confident, so I've excluded these proofs from my count of working proofs anyway.

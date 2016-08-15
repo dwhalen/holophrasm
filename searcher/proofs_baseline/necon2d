@@ -1,0 +1,16 @@
+(iwrite_proof
+Proof
+p1
+(dp2
+S'passes'
+p3
+I169
+sS'proof'
+p4
+S'wph cC cD wceq cA cB wph cC cD wceq cA cB wceq wph cA cB wceq cC cD necon2d.1 necon2bd con2d necon2ad'
+p5
+sS'label'
+p6
+S'necon2d'
+p7
+sb.

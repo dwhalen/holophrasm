@@ -51,8 +51,8 @@ import numpy as np
 
 timeout = int(input("timeout (min)? "))
 passes = int(input("num passes? "))
-beams = int(input("search width? "))
-hyp_bonus = 1.0*int(input("hyp bonus? "))
+beams = int(input("search beam width? "))
+hyp_bonus = 1.0*int(input("hyp bonus? (0 in the paper, but 10 may give better results)"))
 
 with open('lm', 'rb') as handle:
     database = pickle.load(handle)
