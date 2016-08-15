@@ -24,7 +24,6 @@ I think this is purely a problem with the proof writing, but I'm not confident, 
 #############################################
 
 If you want to train from scratch, you can do the following.  I recommend having at least 64GB of RAM.
-Note: this is probably all lies these are my working notes and may change without notice.
 
 Step 0: (OS X only) deal with Accelerate and forking bug
 #########
