@@ -6,7 +6,7 @@ To use the program, start by downloading the release, which includes the binary 
 python run_script_ordered.py
 python write_all_proofs.py
 
-run_script_ordered.py will attempt to search for proofs for all the Metamath propositions, starting with the (expected) easiest proofs search.  Reasonable parameters for running it are:
+run_script_ordered.py will attempt to search for proofs for all the Metamath propositions in the test set, starting with the (expected) easiest proofs first.  Reasonable parameters for running the script are:
 timeout: 5
 num_passes: 10000
 search beam width: 20
