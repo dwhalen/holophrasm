@@ -10,7 +10,7 @@ smoother, especially the saving.
 '''
 
 import nnlibrary as nn
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 
 class ConfigParameters:
@@ -93,7 +93,7 @@ class DefaultConfig:
             self.encode[self.decode[i]] = i
 
         self.num_tokens = len(self.decode)
-        print 'Config(): added '+str(self.num_tokens)+' tokens to dictionary'
+        print('Config(): added '+str(self.num_tokens)+' tokens to dictionary')
         # print self.num_tokens, self.decode
 
     def save(self, file_path):
@@ -185,15 +185,15 @@ class DefaultVariables:
         warned = False
         for v in self.vs:
             if (v.name not in vs_dict) and (not warned):
-                print set([v.name for v in self.vs])
-                print set(vs_dict.keys())
-                print 'in saved but not new'
-                print set(vs_dict.keys()).difference([v.name for v in self.vs])
-                print 'in new but not saved'
-                print set([v.name for v in self.vs]).difference(vs_dict.keys())
-                print 'missing', v.name
-                print v.name in vs_dict
-                print vs_dict.keys()
+                print(set([v.name for v in self.vs]))
+                print(set(vs_dict.keys()))
+                print('in saved but not new')
+                print(set(vs_dict.keys()).difference([v.name for v in self.vs]))
+                print('in new but not saved')
+                print(set([v.name for v in self.vs]).difference(list(vs_dict.keys())))
+                print('missing', v.name)
+                print(v.name in vs_dict)
+                print(list(vs_dict.keys()))
                 raise Warning('Some variables not replaced.')
             else:
                 v.load(vs_dict[v.name])

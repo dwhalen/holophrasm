@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle
 from data_utils5 import *
 
 text = file_contents()

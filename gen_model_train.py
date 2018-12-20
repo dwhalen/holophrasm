@@ -97,7 +97,7 @@ class Model(DefaultModel):
                 hs_backward=self.v.backward_start, parents=in_parents,
                 left_siblings=in_left, right_siblings=in_right,
                 bidirectional=self.config.p.bidirectional,
-                structure_data = zip(depths, parent_arity, leaf_position, arity),
+                structure_data = list(zip(depths, parent_arity, leaf_position, arity)),
                 feed_to_attention=self.config.p.attention)
 
         # set up the attentional model
@@ -118,7 +118,7 @@ class Model(DefaultModel):
         leaf_position = self.out_graph_structure.leaf_position
         parent_arity = self.out_graph_structure.parent_arity
         depths = self.out_graph_structure.depth
-        structure_data = zip(depths, parent_arity, leaf_position, arity)
+        structure_data = list(zip(depths, parent_arity, leaf_position, arity))
 
         out_length = len(out_string)
         out_xs = []

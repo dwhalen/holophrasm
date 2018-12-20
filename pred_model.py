@@ -160,7 +160,7 @@ class Model(DefaultModel):
                 hs_backward=backward_start, parents=in_parents,
                 left_siblings=in_left, right_siblings=in_right,
                 bidirectional=self.config.p.bidirectional,
-                structure_data = zip(depths, parent_arity, leaf_position, arity),
+                structure_data = list(zip(depths, parent_arity, leaf_position, arity)),
                 feed_to_attention=False)
 
         h = nn.ConcatNode(to_middle, self.g)

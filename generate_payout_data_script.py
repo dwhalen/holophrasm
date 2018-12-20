@@ -6,7 +6,7 @@ import withpool
 
 text = file_contents()
 database = meta_math_database(text,n=40000, remember_proof_steps=True)
-print
+print()
 lm = LanguageModel(database)
 
 saved_interface = None
@@ -22,7 +22,7 @@ valp = lm.validation_propositions
 testp = lm.test_propositions
 trainp = lm.training_propositions
 
-chunk_size = len(trainp)/8
+chunk_size = len(trainp)//8
 chunks = [
 valp,
 testp,
@@ -38,7 +38,7 @@ trainp[7*chunk_size:]
 
 def process_chunk(x):
     i,j = x
-    print 'on chunk', i, 'item', j, '/', len(chunks[i])
+    print('on chunk', i, 'item', j, '/', len(chunks[i]))
     return pd.PropositionsData(chunks[i][j])
 
 for i, chunk in enumerate(chunks):
@@ -52,10 +52,11 @@ for i, chunk in enumerate(chunks):
         pickle.dump(None, handle)
 
     # do the stuff.
-    with withpool.Pool(16) as pool:
+    print('generating chunk: '+filename)
+    with withpool.Pool(None) as pool:
         allpds = pool.map(process_chunk, [(i,j) for j in range(len(chunk))], chunksize=1)
 
-    print 'saving '+filename
+    print('saving '+filename)
     with open(filename, 'wb') as handle:
         pickle.dump(allpds, handle)
 
@@ -81,7 +82,7 @@ with withpool.Pool(8) as pool:
 
 print 'saving database'
 
-import cPickle as pickle
+import pickle
 with open('payout_data','wb') as handle:
     pickle.dump(allpds, handle)
     '''

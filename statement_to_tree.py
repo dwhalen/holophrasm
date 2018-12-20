@@ -94,7 +94,7 @@ class StatementParser:
         #     tree = Tree(value='VAR'+statement[1])
         #     return string,tree
         if statement[1] in self.variables:
-            for f in context.f.itervalues():
+            for f in context.f.values():
                 if f.variable == statement[1] and f.vclass == statement[0]:
                     return statement[:2], f.tree
 
@@ -121,13 +121,13 @@ class StatementParser:
         prop_s = proposition.statement
 
         # the types of all the free variables
-        variable_types = {hyp.variable:hyp.vclass for hyp in proposition.f.itervalues()}
+        variable_types = {hyp.variable:hyp.vclass for hyp in proposition.f.values()}
 
         # string definitions of all the free variables
-        variable_definitions = {hyp.variable:None for hyp in proposition.f.itervalues()}
+        variable_definitions = {hyp.variable:None for hyp in proposition.f.values()}
 
         #tree defintions of all the free variables
-        variable_trees = {hyp.variable:None for hyp in proposition.f.itervalues()}
+        variable_trees = {hyp.variable:None for hyp in proposition.f.values()}
 
         index_into_s = 0
         index_into_prop_s=0

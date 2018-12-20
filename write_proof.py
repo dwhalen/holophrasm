@@ -1,7 +1,7 @@
 from shutil import move
 import os
 import fileinput
-import cPickle as pickle
+import pickle as pickle
 
 in_file = 'set.mm'
 out_file = 'modified_set.mm'
@@ -123,7 +123,7 @@ def write(dictionary, reset=False):
         else:
             # this must be a label!
             if label is not None:
-                print 'label', label
+                print('label', label)
             assert label is None
             label = token
             if label not in dictionary:
@@ -141,7 +141,7 @@ def write(dictionary, reset=False):
     with open(out_file, 'w') as handle:
         handle.write(out)
     
-    print 'added', added_proofs, 'proofs'
+    print('added', added_proofs, 'proofs')
 
 
 '''
@@ -174,8 +174,8 @@ def write_all_known_proofs(directory='searcher'):
         if label[0]=='.': continue
         proof = load_proof(label, directory)
         d[proof.label] = proof.proof
-    labels = d.keys()
-    print 'Writing proofs for '+str(len(labels))+' propositions:'
+    labels = list(d.keys())
+    print('Writing proofs for '+str(len(labels))+' propositions:')
     # print labels
     # add create the new set.mm
     write(d, reset=True)  # include a reset.
@@ -193,7 +193,7 @@ class Proof:
         file_path = directory +'/'+self.label
 
         if os.path.exists(file_path):
-            print 'Failed to write to '+file_path+': proof already exists'
+            print('Failed to write to '+file_path+': proof already exists')
             return
 
         with open(file_path, 'wb') as handle:

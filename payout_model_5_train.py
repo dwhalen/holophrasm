@@ -5,7 +5,7 @@ import numpy as np
 import random
 
 
-import cPickle as pickle
+import pickle as pickle
 
 
 
@@ -31,7 +31,7 @@ def load_payout_data():
     for i in range(10):
         with open('payout_data_'+str(i), 'rb') as handle:
             payout_data.append( pickle.load(handle) )
-        print 'loaded data', i
+        print('loaded data', i)
 
     global global_validation_data
     global global_test_data
@@ -43,7 +43,7 @@ def load_payout_data():
             payout_data[8]+payout_data[9])
     global data_loaded
     data_loaded = True
-    print 'processed data', len(global_training_data), len(global_validation_data), len(global_test_data)
+    print('processed data', len(global_training_data), len(global_validation_data), len(global_test_data))
 
 '''
 Standard neural network stuff
@@ -154,7 +154,7 @@ class Model(DefaultModel):
                 hs_backward=self.v.backward_start, parents=in_parents,
                 left_siblings=in_left, right_siblings=in_right,
                 bidirectional=self.config.p.bidirectional,
-                structure_data = zip(depths, parent_arity, leaf_position, arity),
+                structure_data = list(zip(depths, parent_arity, leaf_position, arity)),
                 feed_to_attention=False)
 
         h = nn.ConcatNode(to_middle, self.g)

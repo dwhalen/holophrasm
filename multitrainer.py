@@ -8,7 +8,7 @@ import time
 import os
 import sys
 
-import cPickle as pickle
+import pickle as pickle
 import matplotlib.pyplot as plt
 
 #from pathos.multiprocessing import ProcessingPool as Pool
@@ -61,7 +61,7 @@ class Trainer(object):
         self.config.save(file_name+'/train.parameters')
         self.save_learning_history(file_name+'/train.history')
         out_string = 'saved session in '+str(time.time()-start) + 's'
-        print out_string
+        print(out_string)
         self.add_to_log(out_string)
 
     def load_learning_history(self, load_location):
@@ -112,7 +112,7 @@ class Trainer(object):
 
         self.learning_history.append(avg_loss, acc_list, type=data_type)
         out_string = self.batch_string(data_type)
-        print out_string
+        print(out_string)
         self.add_to_log(out_string)
 
         self.reset_batch()
@@ -174,7 +174,7 @@ class Trainer(object):
         else:
             # normalprocessing
             t3 = time.time()
-            out = map(batch_call_multi, proof_steps)
+            out = list(map(batch_call_multi, proof_steps))
             self.total_time[2]+=time.time()-t3
 
         #print [(np.mean(x[0][0])) for x in out]
@@ -259,7 +259,7 @@ class Trainer(object):
             self.save_session(file_name=self.save_location)
 
         out_string = 'total epoch time {0:11.2f}'.format( time.time()-epoch_start_time )
-        print out_string
+        print(out_string)
         self.add_to_log(out_string)
 
 
@@ -282,7 +282,7 @@ class Trainer(object):
         # validation decay
         if val > self.last_val:
             out_string = 'Reducing learning rate '+str(self.config.p.lr)+' -> '+str(self.config.p.lr / self.config.p.lr_reduction)
-            print out_string
+            print(out_string)
             self.add_to_log(out_string)
             self.config.p.lr /= self.config.p.lr_reduction
             self.v.optimizer.update_learning_rate(self.config.p.lr)  # this works, although I don't like it.
@@ -294,7 +294,7 @@ class Trainer(object):
         self.early_stop = None
         batch = []
         data_set = self.test_data_set
-        print 'number of test data,', len(data_set)
+        print('number of test data,', len(data_set))
         for tindex in range(len(data_set)):
             t = data_set[tindex]
             batch.append(tindex)
@@ -325,7 +325,7 @@ class Trainer(object):
         self.best_val = 10000000
         self.last_val = 10000000
 
-        print 'running epochs'
+        print('running epochs')
 
         global global_trainer
         global_trainer = self
@@ -338,7 +338,7 @@ class Trainer(object):
             if self.config.p.max_epochs is not None and epoch >= self.config.p.max_epochs: return
             self.run_epoch()
             out_string = 'finished epoch '+str(epoch)+'\n'
-            print out_string
+            print(out_string)
             self.add_to_log(out_string)
             #print 'added'
             if not early_stop is None: return
@@ -348,10 +348,10 @@ class Trainer(object):
                 best_val_epoch = epoch
                 if self.save_best:
                     out_string = 'saving best epoch'
-                    print out_string
+                    print(out_string)
                     self.add_to_log(out_string)
                     self.v.save(self.save_location+'/best.weights')
-                    print 'saved best'
+                    print('saved best')
 
 def init_func():
     signal.signal(signal.SIGINT, signal.SIG_IGN)

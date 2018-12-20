@@ -39,7 +39,7 @@ BEAM_SIZE = 10
 VERBOSE = False
 def printv(*x):
     if VERBOSE:
-        print x
+        print(x)
 
 # value for UCT is calculated as:
 # c.value/(c.visits + GAMMA * c.visiting_threads)
@@ -88,23 +88,23 @@ def global_get_payout(tree):
     try:
         return global_interface.get_payout(tree, global_context)
     except:
-        print 'ERROR IN GET PAYOUT'
-        print tree
-        print('%s: %s' % ('test', traceback.format_exc()))
+        print('ERROR IN GET PAYOUT')
+        print(tree)
+        print(('%s: %s' % ('test', traceback.format_exc())))
 def global_apply_prop(tree, prop_name):
     try:
         return global_interface.apply_prop(tree, global_context, prop_name, n=BEAM_SIZE)
     except:
-        print 'ERROR IN APPLY PROP'
-        print tree, prop
-        print('%s: %s' % ('test', traceback.format_exc()))
+        print('ERROR IN APPLY PROP')
+        print(tree, prop_name)
+        print(('%s: %s' % ('test', traceback.format_exc())))
 def global_props(tree):
     try:
         return global_interface.props(tree, global_context)
     except:
-        print 'ERROR IN PROPS'
-        print tree
-        print('%s: %s' % ('test', traceback.format_exc()))
+        print('ERROR IN PROPS')
+        print(tree)
+        print(('%s: %s' % ('test', traceback.format_exc())))
 
 ''' some stuff for multithreading.
 I would have expected Pool to work with with.  Maybe
@@ -211,7 +211,7 @@ class TypeA:
             self.proven = True
             self.label = label
             self.is_hypothesis = True
-            
+
             # these should never be used
             self.modification_lock = threading.Lock()
             self.children_lock = threading.Lock()
@@ -241,7 +241,7 @@ class TypeA:
         are of the form (-log probability, prop_label, tree or None) '''
         self.heap_lock = threading.Lock()
         self.heap = None
-        
+
         # do the tautology checking now.
         if CHECK_TAUTOLOGIES and not CHECK_LAST_STEP:
             taut = global_interface.is_tautology(self.tree, global_context)
@@ -252,16 +252,16 @@ class TypeA:
                 # add the blue child immediately.
                 b = TypeB([], np.exp(0.0), self, taut)
                 self.children.append(b)
-                self.update_proven()     
+                self.update_proven()
                 printv('added tautology:', taut," ", print_pp(self.tree, None)   )
-        
+
         elif CHECK_LAST_STEP:
             out = last_step.is_easy(self.tree, global_context, global_problem.lm)
             if out is not None:
                 label, hyps = out
                 b = TypeB(hyps, np.exp(0.0), self, label)
                 self.children.append(b)
-                self.update_proven()     
+                self.update_proven()
                 assert self.proven
                 printv('added last_step:', label," ", print_pp(self.tree, None)   )
 
@@ -327,7 +327,7 @@ class TypeA:
                     this_lp = this_lp+lp-lp_new #
                     heapq.heappush(self.heap, (-1.0*this_lp, label, this_tree))
         return child
-    
+
     def attempt_to_add_child(self, next_child, parent_trees):
         child = self.create_child(next_child, parent_trees=parent_trees+[self.tree])
         #print 'child', child
@@ -343,7 +343,7 @@ class TypeA:
                 self.in_queue -= 1
             # TODO: it's possible that I should keep trying things until they work
             return None
-            
+
     def apply_easy_props(self, parent_trees):
         with self.heap_lock:
             # this figures out all the propositions that are easy and adds them
@@ -359,7 +359,7 @@ class TypeA:
                     heapq.heappush(self.heap, child_params)
             self.in_queue += len(children_to_add)
             self.modified_visits = len(children_to_add)
-            
+
         #print 'children to add: ', children_to_add
         for next_child in children_to_add:
             self.attempt_to_add_child(next_child, parent_trees)
@@ -367,7 +367,7 @@ class TypeA:
             self.update_value()
             if self.proven:
                 break
-            
+
     def visit_next_child(self, parent_trees):
         '''
         let's try something different: keep track of how many
@@ -383,7 +383,7 @@ class TypeA:
             self.apply_easy_props(parent_trees)
             if len(self.children) > 0:
                 return True
-            
+
 
         with self.heap_lock:
             #if min_child_visits > 1 and len(self.heap) > 0:
@@ -472,16 +472,16 @@ class TypeA:
         self.value = self.initial_payout + sum(c.value for c in self.children)
         self.visits = 1 + sum(c.visits for c in self.children)+self.childless_visits
         self.modified_visits = self.visits
-        
+
     def print_proof(self, prefix, depth):
         if len(self.children)==0:
             if self.proven:
                 #print '{1:6.2f}% {0:4.2f} {2:4.2f} {3:4} '.format(uct_score, self.prob*100.0, self.value/(self.visits+0.00001), self.visits)
                 #print ' '*(8+10) + '{1:4.2f} ! {0:9}'.format('HYP', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth)
-                print ' '*(8+5) + '{1:4.2f}    1 ! {0:9}'.format('HYP', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth)
+                print(' '*(8+5) + '{1:4.2f}    1 ! {0:9}'.format('HYP', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth))
             else:
                 #print ' '*(8+10) + '{1:4.2f}   {0:9}'.format('????', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth)
-                print ' '*(8+5) + '{1:4.2f}    1   {0:9}'.format('????', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth)
+                print(' '*(8+5) + '{1:4.2f}    1   {0:9}'.format('????', self.initial_payout)+prefix+str(depth)+' '+print_pp(self.tree, depth))
             return
 
         #sorted_children = sorted(self.children)
@@ -489,12 +489,12 @@ class TypeA:
         unsorted = [(c.visits + c.value/c.visits, c) for c in self.children]
         unsorted.sort()
         unsorted.reverse()
-        _, sorted_children = zip(*unsorted)
+        _, sorted_children = list(zip(*unsorted))
         # sorted_children = self.children
         sorted_children[0].print_proof(prefix, depth)
         for c in sorted_children[1:]:
             string = ''
-            print ' '*(8+10) +'       {0:9}'.format('')+prefix+'or'
+            print(' '*(8+10) +'       {0:9}'.format('')+prefix+'or')
             c.print_proof(prefix, depth)
 
     def generate_mm_format_proof(self):
@@ -555,7 +555,7 @@ class TypeB:
         self.check_death()
         if self.proven or self.dead:
             return None
-        
+
         # checks whether the child node with dominent value has changed
         # and if so, potentially propagates things up
         unproven_children = [c for c in self.children if c.can_be_visited()]
@@ -577,20 +577,20 @@ class TypeB:
         self.value = best_child.value + bonus_value
         self.visits = best_child.visits
         return (delta_value, delta_visits)
-            
+
     def update_value_full_tree(self):
         self.update_proven()
         self.check_death()
         if self.proven or self.dead:
             return None
-            
+
         if len(self.children) == 0:
             self.value = 1.0
             self.visits = 1
         else:
             self.visits = sum(c.visits for c in self.children)
             self.value = sum(c.value for c in self.children)
-                
+
     def visit(self, parent_trees):
         # always visit the child with the lowest *true* value
         child_values = [c.value/c.visits for c in self.children if c.can_be_visited()]
@@ -635,7 +635,7 @@ class TypeB:
             string += '*'
         else:
             string +=' '
-        print string+'{0:9}'.format(self.label[:9])+prefix+str(depth)+' '+print_pp(self.parent.tree, global_context)
+        print(string+'{0:9}'.format(self.label[:9])+prefix+str(depth)+' '+print_pp(self.parent.tree, global_context))
 
         for c in self.children:
             c.print_proof(prefix + '| ', depth+1)
@@ -672,7 +672,7 @@ class ProofSearcher:
         # timeout is in minutes
         self.start_time = time.time()
         self.timeout = timeout
-        
+
         self.lm = lm
         self.directory = directory
 
@@ -694,7 +694,7 @@ class ProofSearcher:
         global_using_threads = False
 
         if global_interface is None:
-            print global_interface
+            print(global_interface)
             global_interface = ProofInterface(lm, directory=directory)
         global_context = lm.standardize_context(prop)
         global_problem = self
@@ -715,7 +715,7 @@ class ProofSearcher:
             if hyp.tree == tree:
                 # Oh, look.  We're already done.
                 self.root = node
-        
+
         # build the root node
         self.root = TypeA(tree, 0)
 
@@ -764,10 +764,10 @@ class ProofSearcher:
             if self.clear_output:
                 clear_output()
             if self.root.proven:
-                print 'PROVEN'
+                print('PROVEN')
             self.last_print_time = time.time()
             if self.print_output:
-                print 'Current proof after {0} / {1} passes'.format(self.passes, self.max_passes)
+                print('Current proof after {0} / {1} passes'.format(self.passes, self.max_passes))
                 self.root.print_proof('', 0)
 
     def visit(self):
@@ -782,7 +782,7 @@ class ProofSearcher:
     def done(self):
         elapsed_time = time.time()-self.start_time
         if self.timeout is not None and elapsed_time > self.timeout * 60:
-            print 'search ended: reached timeout of {0} minutes'.format(self.timeout)
+            print('search ended: reached timeout of {0} minutes'.format(self.timeout))
             return True
         return (self.passes >= self.max_passes) or self.root.proven or self.root.dead
 
@@ -794,13 +794,13 @@ class ProofSearcher:
         string = self.root.generate_mm_format_proof()
         #print 'string', string
         # now we substitute the variable constructors back in.
-        dereplace = {v: k for k, v in self.context.replacement_dict.iteritems() if k in self.context.mandatory}
+        dereplace = {v: k for k, v in self.context.replacement_dict.items() if k in self.context.mandatory}
         #print dereplace
         string = [label if label not in dereplace else dereplace[label]
             for label in string]
 
         string = ' '.join(string)
-        print string
+        print(string)
         return string
 
     def write(self):

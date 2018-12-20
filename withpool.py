@@ -38,6 +38,6 @@ class Pool:
             return self.p.apply(*args, **kwargs)
     def map(self, *args, **kwargs):
         if self.procs is None:
-            return map(*args, **kwargs)
+            return list(map(*args))
         else:
             return self.p.map(*args, **kwargs)

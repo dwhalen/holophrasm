@@ -84,7 +84,7 @@ def is_label_easy(tree, context, lm, prop):
     return None
     
 def verify_compatibility(a,b):
-    for key, value in b.iteritems():
+    for key, value in b.items():
         if key in a:
             if a[key]!=b[key]:
                 return False
@@ -96,7 +96,7 @@ def are_valid_fits(initial_fit, other_fits, prop, context):
     #print 'are_valid_fits', initial_fit, other_fits
     # start by merging the dictionaries
     for other in other_fits:
-        for key, value in other.iteritems():
+        for key, value in other.items():
             if key in fit:
                 if value != fit[key]:
                     return None

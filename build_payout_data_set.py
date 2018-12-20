@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle as pickle
 import interface
 import withpool
 import data_utils5 as data
@@ -35,7 +35,7 @@ def slow_delete_duplicates(inlist):
 def initialize_interface(lm, directory):
     global global_interface
     global global_lm
-    global_interface = interface.ProofInterface(lm, directory=directory)
+    global_interface = interface.ProofInterface(lm, directory=directory, skip_payout=True)
     global_lm = lm
 
 class PropositionsData:
@@ -81,7 +81,7 @@ class PropositionsData:
         self.wrong = slow_delete_duplicates(self.wrong)
         self.correct = slow_delete_duplicates(self.correct)
 
-        print prop.label, time.time()-start, 'with hyps/correct/wrong', len(self.hyps),len(self.correct),len(self.wrong)
+        print(prop.label, time.time()-start, 'with hyps/correct/wrong', len(self.hyps),len(self.correct),len(self.wrong))
         # if any('wps' in tree for tree in self.correct):
         #     print 'WPSWPSWPSWPSWPSWPSWPSWPSWPSWPSWPSWPS'
         #     print self.correct, prop.f

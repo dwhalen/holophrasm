@@ -1,14 +1,14 @@
 import cpuinfo
 info = cpuinfo.get_cpu_info()
-print('Vendor ID: {0}'.format(info['vendor_id']))
-print('Brand: {0}'.format(info['brand']))
-print('Hz Advertised: {0}'.format(info['hz_advertised']))
-print('Hz Actual: {0}'.format(info['hz_actual']))
-print('Count: {0}'.format(info['count']))
+print(('Vendor ID: {0}'.format(info['vendor_id'])))
+print(('Brand: {0}'.format(info['brand'])))
+print(('Hz Advertised: {0}'.format(info['hz_advertised'])))
+print(('Hz Actual: {0}'.format(info['hz_actual'])))
+print(('Count: {0}'.format(info['count'])))
 
 
-print
-print
+print()
+print()
 
 import numpy as np
 from sys import getsizeof
@@ -21,12 +21,12 @@ from data_utils5 import *
 import multitrainer as trainer
 
 text = file_contents()
-database = meta_math_database(text,n=2000)
-print
+database = meta_math_database(text,n=None)
+print()
 language_model = LanguageModel(database)
 
-print
-print
+print()
+print()
 
 # this is the main routine for actual training
 #import pred_model as model
@@ -48,12 +48,12 @@ config.p.out_layers = 1
 
 config.p.max_epochs = None
 train_object = trainer.Trainer(config, load=False,
-        draw_plots=False, save_location='./weights/gen2000', model=model)
+        draw_plots=False, save_location='./weights/gen', model=model)
 
 train_object.v.optimizer.gradient_clipping = 100.0 # clip the norm to this amount
 
-print
-print
+print()
+print()
 
 train_object.run_many_epochs(language_model, plot_every=1000,
                              write_every=10, early_stop=None, save_every=30,

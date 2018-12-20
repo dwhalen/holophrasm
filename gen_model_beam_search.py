@@ -126,7 +126,7 @@ class BeamSearchState:
         else:
             self.remaining_uas = beam_search_state.remaining_uas[:]
             self.fit = beam_search_state.fit.copy()
-    
+
     def get_all_allowed_symbols(self, allowed_symbols):
         if allowed_symbols is None: return None
         hyp_symbols = [s.tree.set() for s in self.context.hyps if s.type == 'e']
@@ -139,7 +139,7 @@ class BeamSearchState:
         all_symbols = all_symbols.union(allowed_symbols)
         #print 'gotten all', all_symbols
         return all_symbols
-    
+
     def finish_model(self):
         # the only thing we need to do is add our new tree
         # to the current fit.
@@ -254,6 +254,18 @@ class BeamSearchState:
         if self.value < other.value: return -1
         if self.value == other.value: return 0
         return 1
+    def __eq__(self, other):
+        return self.value == other.value
+    def __neq__(self, other):
+        not self.value != other.value
+    def __lt__(self, other):
+        return self.value < other.value
+    def __le__(self, other):
+        return self.value <= other.value
+    def __gt__(self, other):
+        return self.value > other.value
+    def __ge__(self, other):
+        return self.value >= other.value
 
     def get_logits_and_next_state(self, left, parent, structure_data):
         # return logits, an actual np array and hs, a list of lists of nodes
@@ -268,12 +280,12 @@ class BeamSearchState:
         self.logits = x/len(self.vs)
         self.logits = -1 * nn.negative_log_softmax(self.logits) # log probability
         self.logit_order =np.argsort(self.logits)[::-1]  # highest prop to lowest
-        
+
         # print self.string
         # print self.logit_order
         # print self.logits
         # print [self.config.decode[i] for i in self.logit_order[0:50]]
-        # print 
+        # print
 
     def generate_tree(self):
         assert self.model_complete
@@ -354,11 +366,11 @@ class BeamSearchState:
 
         # I wish there were a better way to do this.
         context_variables_names = self.lm.new_names
-        prop_variable_names = self.prop.f.keys()
+        prop_variable_names = list(self.prop.f.keys())
 
         distincts = [] # the variables that this needs to be distinct from
         # note that this is larger than the list of variable it can't include
-        for prop_v in self.fit.iterkeys():
+        for prop_v in self.fit.keys():
             # d_labels already considers both directions
             if (prop_v, self.this_ua) in self.prop.d_labels:
                 distincts += self.fit[prop_v].list()
@@ -395,11 +407,11 @@ class BeamSearchState:
         be a special symbol
         have the wrong v-class
         '''
-        
+
         if self.allowed_constructors is not None and symbol not in self.allowed_constructors:
             # it's a new symbol that's insufficiently common
             return False
-        
+
         # print symbol, self.used_symbols
         if symbol in self.disallowed_symbols:
             # symbol conflicts with a d-statement
@@ -464,29 +476,29 @@ class BeamSearchState:
             else:
                 statement = ""
                 valid = ""
-            print '{0:6.4f}/{1:6.4f}: {2:10} {3:20} {4}'.format(p,np.log(p),s, statement, valid)
+            print('{0:6.4f}/{1:6.4f}: {2:10} {3:20} {4}'.format(p,np.log(p),s, statement, valid))
         # print probs
         # print symbols
 
 
     def print_summary(self):
-        print 'State summary:'
-        print 'fit', self.fit
+        print('State summary:')
+        print('fit', self.fit)
         if self.logits is not None:
-            print 'predictions'
+            print('predictions')
             self.print_predictions()
-        print 'parent_arity_stack', self.parent_arity_stack
-        print 'left_sibling_stack', self.left_sibling_stack
-        print 'parent_stack', self.parent_stack
-        print 'position_into_arity_stack', self.position_into_arity_stack
-        print 'model_complete', self.model_complete
-        print 'complete', self.complete
-        print 'string', self.string
-        print 'this_ua', self.this_ua
-        print 'remaining_uas', self.remaining_uas
-        print 'value', self.value
-        print 'parent_symbol_stack', self.parent_symbol_stack
-        print
+        print('parent_arity_stack', self.parent_arity_stack)
+        print('left_sibling_stack', self.left_sibling_stack)
+        print('parent_stack', self.parent_stack)
+        print('position_into_arity_stack', self.position_into_arity_stack)
+        print('model_complete', self.model_complete)
+        print('complete', self.complete)
+        print('string', self.string)
+        print('this_ua', self.this_ua)
+        print('remaining_uas', self.remaining_uas)
+        print('value', self.value)
+        print('parent_symbol_stack', self.parent_symbol_stack)
+        print()
 
     def __repr__(self):
         return self.__str__()
@@ -533,7 +545,7 @@ class Model(model.Model):
                 hs_backward=self.v.backward_start, parents=in_parents,
                 left_siblings=in_left, right_siblings=in_right,
                 bidirectional=self.config.p.bidirectional,
-                structure_data = zip(depths, parent_arity, leaf_position, arity),
+                structure_data = list(zip(depths, parent_arity, leaf_position, arity)),
                 feed_to_attention=self.config.p.attention)
 
         # set up the attentional model
@@ -580,7 +592,7 @@ class Model(model.Model):
         # print
         # DEBUG
 
-        for key, value in self.random_replacement_dict.iteritems():
+        for key, value in self.random_replacement_dict.items():
             key_location = self.config.encode[key]
             value_location = self.config.encode[value]
             x[key_location] = logits[value_location]

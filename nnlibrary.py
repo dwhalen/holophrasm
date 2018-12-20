@@ -256,7 +256,7 @@ class ConcatNode(Node):
 def SplitNode(vector, num_split, graph):
     vlen = vector.value.shape[0]
     assert vlen % num_split == 0
-    length = vlen/num_split
+    length = vlen//num_split
 
     out = [IndexNode(length*i, length, vector, graph) for i in range(num_split)]
     return out

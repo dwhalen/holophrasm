@@ -1,10 +1,10 @@
 '''
 This is a basic paser for the metamath language.
 
-
 NOTE: THIS IS NOT A PROOF VERIFIER.  IT CATCHES MOST PROBLEMS WITH METAMATH
 PROOFS, BUT MAY NOT CATCH ALL OF THEM.
 '''
+
 
 import sys
 import itertools
@@ -55,7 +55,7 @@ class file_contents:
         f = open(full_path, 'r')
         f_contents = f.read().split()
         f.close()
-        print "included", len(f_contents), "tokens from", filename
+        print("included", len(f_contents), "tokens from", filename)
         f_contents.reverse()
         self.tokens += f_contents
         self.included_files.add(full_path)
@@ -158,12 +158,12 @@ class proof_step:
         self.applicable_propositions = None
 
     def summarize(self):
-        print "proof step summary:"
-        print "  statement", self.tree.stringify()
-        print "  involved in proof of", self.context.label
-        print "  uses", self.prop.label
-        print "    with new steps",[tree.stringify() for tree in self.unconstrained]
-        print "  height", self.height, "descendants",self.descendants
+        print("proof step summary:")
+        print("  statement", self.tree.stringify())
+        print("  involved in proof of", self.context.label)
+        print("  uses", self.prop.label)
+        print("    with new steps",[tree.stringify() for tree in self.unconstrained])
+        print("  height", self.height, "descendants",self.descendants)
 
 class proposition:
     # this is more-or-less the same as a block, but with some additional information
@@ -187,7 +187,7 @@ class proposition:
         self.e = block.e.copy()  # all active e-statements are mandatory
 
         # include only the mandatory f statements.  We'll extend this later after we decompress the proof.
-        self.f = {label:block.f[label] for label in block.f if block.f[label].variable in statement or any(block.f[label].variable in e.statement for e in block.e.itervalues())}
+        self.f = {label:block.f[label] for label in block.f if block.f[label].variable in statement or any(block.f[label].variable in e.statement for e in block.e.values())}
 
         # all the mandatory hypotheses
         self.hyps = [hyp for hyp in block.hyps if hyp.type == "e" or hyp.label in self.f]
@@ -217,13 +217,13 @@ class proposition:
         self.applicable_propositions = None
 
     def print_details(self):
-        print
-        print '('+self.type+')',self.label+': arity',self.arity()
-        if len(self.d)>0: print ' ',self.d
-        print 'f:',self.f
+        print()
+        print('('+self.type+')',self.label+': arity',self.arity())
+        if len(self.d)>0: print( ' ',self.d)
+        print( 'f:',self.f)
         for hyp in self.hyps:
-            print '  '+hyp.label+':',concatonate_to_string(hyp.statement)
-        print 'statement:',concatonate_to_string(self.statement)
+            print( '  '+hyp.label+':',concatonate_to_string(hyp.statement))
+        print('statement:',concatonate_to_string(self.statement))
 
     # the arity of the statement
     def arity(self):
@@ -260,7 +260,7 @@ class proposition:
         # that's all wrong.  Very wrong.  What we actually want to do is
         # verify that for every pair (v1,v2) in self.d, for every pair of variables x in v1, y in v2
         # we have (x,y) in context.d
-        context_variables = set(f.variable for f in context.f.itervalues())
+        context_variables = set(f.variable for f in context.f.values())
         var_sets =  {self.hyps[i].variable:trees[i].set().intersection(context_variables) for i in range(len(trees)) if self.hyps[i].type == "f"}
         for v1,v2 in self.d:
             if v1 not in var_sets or v2 not in var_sets: continue # one of these is an optional variable, used only in the proof
@@ -277,13 +277,13 @@ class proposition:
     # Reads though the proof and finds all the optionals that are referenced and includes them
     # in the f statements for the proposition
     def update_optional_hypotheses(self,block):
-        for f in block.f.itervalues():
+        for f in block.f.values():
             if (not f.label in self.f) and (f.label in self.proof):
                 self.f[f.label] = f
         self.update_d()
 
     def update_d(self):
-        included_vars = set(f.variable for f in self.f.itervalues())
+        included_vars = set(f.variable for f in self.f.values())
         self.d = set(x for x in self.d if x[0] in included_vars and x[1] in included_vars)
 
 class meta_math_database:  # the database is just a collection of blocks
@@ -474,10 +474,10 @@ class meta_math_database:  # the database is just a collection of blocks
             elif label in context.f:
                 arities[label] = 0 # hypotheses have 0 arity
             else:
-                print prop.print_details()
-                print token_list
-                print proof
-                print label
+                print(prop.print_details())
+                print(token_list)
+                print (proof)
+                print (label)
                 raise Exception('not defined')
         zpositions = [];
 
@@ -506,9 +506,9 @@ class meta_math_database:  # the database is just a collection of blocks
                     remaining_arity = 1;
                     while remaining_arity>0:
                         if source_position<0:
-                            print token_list,zpositions,compressed_proof
-                            print to_append,source_position
-                            print remaining_arity
+                            print (token_list,zpositions,compressed_proof)
+                            print (to_append,source_position)
+                            print (remaining_arity)
                             prop.print_details()
                             raise Exception('reached start of proof before finishing Z substitution')
                         new_token = out[source_position]
@@ -518,8 +518,8 @@ class meta_math_database:  # the database is just a collection of blocks
                     to_append.reverse()
                     out += to_append
                 else:
-                    print len(token_list),len(zpositions), 'current=',current
-                    print token_list,proof[index-5:index+1]
+                    print (len(token_list),len(zpositions), 'current=',current)
+                    print( token_list,proof[index-5:index+1])
                     raise Exception('Attemped to refer to non-existant token position')
 
                 # now reset the counter

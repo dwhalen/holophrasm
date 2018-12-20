@@ -1,1 +1,10 @@
 *.pyc
+*.bak
+searcher/bak/*
+searcher/proofs/*
+searcher/*.weights
+searcher/*.parameters
+searcher/pred_database
+lm
+weights/*
+payout_data_*

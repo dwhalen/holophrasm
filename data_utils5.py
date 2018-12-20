@@ -28,7 +28,7 @@ class Container:
 class LanguageModel:
     def __init__(self, database):
         """Builds a number of dictionaries equal to max_axiom_arity"""
-        self.max_axiom_arity = max([p.arity() for p in database.non_entails_axioms.itervalues()]) + 1  # one more than the max
+        self.max_axiom_arity = max([p.arity() for p in database.non_entails_axioms.values()]) + 1  # one more than the max
 
         self.database = database
 
@@ -36,19 +36,19 @@ class LanguageModel:
         self.searcher = SearchProblem(database, max_unconstrained_arity = self.max_unconstrained_arity)
 
         self.tautologies = set()
-        for p in self.database.propositions.itervalues():
+        for p in self.database.propositions.values():
             e_hyps = [h for h in p.hyps if h.type == 'e']
             if p.vclass=='|-' and len(e_hyps) == 0:
                 self.tautologies.add(p.label)
-        print 'tautologies:', len(self.tautologies)
-        
+        print('tautologies:', len(self.tautologies))
+
         # the propositions with trivial unconstrained arity.  That is, the ones
         # that are really easy to apply.
         self.constrained_propositions = set(
-                p.label for p in self.database.propositions.itervalues()
+                p.label for p in self.database.propositions.values()
                 if p.vclass == '|-' and p.unconstrained_arity() == 0
                 )
-                
+
         # figure out the names of the read variables
         # self.real_wff_names = set()
         # self.real_set_names = set()
@@ -65,9 +65,9 @@ class LanguageModel:
 
         # we need to define some extra variables, which we'll randomly assign when we read in a statement
         # this is a reasonable amount of data augmentation.
-        self.extra_wffs     = language_model_extra_variables_of_each_type+max(len([f for f in p.f.itervalues() if f.vclass=='wff']) for p in database.propositions.itervalues() )
-        self.extra_classes  = language_model_extra_variables_of_each_type+max(len([f for f in p.f.itervalues() if f.vclass=='class']) for p in database.propositions.itervalues() )
-        self.extra_sets     = language_model_extra_variables_of_each_type+max(len([f for f in p.f.itervalues() if f.vclass=='set']) for p in database.propositions.itervalues() )
+        self.extra_wffs     = language_model_extra_variables_of_each_type+max(len([f for f in p.f.values() if f.vclass=='wff']) for p in database.propositions.values() )
+        self.extra_classes  = language_model_extra_variables_of_each_type+max(len([f for f in p.f.values() if f.vclass=='class']) for p in database.propositions.values() )
+        self.extra_sets     = language_model_extra_variables_of_each_type+max(len([f for f in p.f.values() if f.vclass=='set']) for p in database.propositions.values() )
 
         # hand code these in.
         self.extra_sets = 20
@@ -112,18 +112,18 @@ class LanguageModel:
         self.new_names = self.wff_names+self.set_names+self.class_names
 
         # describe the number of variables we've used
-        print 'wff variables:',self.extra_wffs
-        print 'class variables:',self.extra_classes
-        print 'set variables:',self.extra_sets
+        print('wff variables:',self.extra_wffs)
+        print('class variables:',self.extra_classes)
+        print('set variables:',self.extra_sets)
         #print 'ua variables:', self.ua_names
 
         # now add the actual constructor axioms to our dictionary
-        for p in database.non_entails_axioms.itervalues():
+        for p in database.non_entails_axioms.values():
             c_dict = self.constructor_dictionary[p.arity()]
             c_dict[p.label] = len(c_dict)
 
         for i in range(self.max_axiom_arity):
-            print len(self.constructor_dictionary[i]),'constructor axioms with arity',i
+            print(len(self.constructor_dictionary[i]),'constructor axioms with arity',i)
 
         # build a pair of dictionaries that convert (arity,num) to total_num
         # and vice versa.  This is ugly.  Whatever
@@ -142,7 +142,7 @@ class LanguageModel:
         np.random.seed(seed=121451345)
         list_of_propositions = np.random.permutation(list_of_propositions)
 
-        num_validation = len(list_of_propositions)/10
+        num_validation = len(list_of_propositions)//10
         num_test = num_validation
         num_training = len(list_of_propositions)-num_test-num_validation
         self.training_propositions = list_of_propositions[:num_training]
@@ -154,7 +154,7 @@ class LanguageModel:
 
         if self.database.remember_proof_steps:
             self.all_proof_steps = [] # except those that refer to e or f-type hypotheses
-            for p in self.database.propositions.itervalues():
+            for p in self.database.propositions.values():
                 self.all_proof_steps += [step for step in p.entails_proof_steps if not (step.prop.type=='f' or step.prop.type == 'e')]
 
 
@@ -173,10 +173,10 @@ class LanguageModel:
                 self.test_proof_steps += [step for step in p.entails_proof_steps
                         if not (step.prop.type=='f' or step.prop.type == 'e')]
 
-            print
-            print 'training steps:', len(self.training_proof_steps)
-            print 'validation steps:', len(self.validation_proof_steps)
-            print 'test steps:', len(self.test_proof_steps)
+            print()
+            print('training steps:', len(self.training_proof_steps))
+            print('validation steps:', len(self.validation_proof_steps))
+            print('test steps:', len(self.test_proof_steps))
 
 
             # figure out how frequenly each proposition is used
@@ -186,7 +186,7 @@ class LanguageModel:
 
             # figure out what the most difficult proof step is
             self.max_depth = max([s.height for s in self.all_proof_steps]) + 1
-            print 'max proof step depth:', self.max_depth-1
+            print('max proof step depth:', self.max_depth-1)
 
 
         # figure out the number of times each proposition is used.
@@ -206,7 +206,7 @@ class LanguageModel:
         self.unconstrained_label_to_number = {}
         for p in self.database.propositions_list:  # in order of proposition number
             u_arity = p.unconstrained_arity()
-            self.unconstrained_arity_indices[p.label]=range(self.total_unconstrained_arity, self.total_unconstrained_arity + u_arity)
+            self.unconstrained_arity_indices[p.label]=list(range(self.total_unconstrained_arity, self.total_unconstrained_arity + u_arity))
             self.total_unconstrained_arity += u_arity
             self.unconstrained_label_to_number[p.label]=len(self.unconstrained_label_to_number)
         #self.max_unconstrained_arity = max([p.unconstrained_arity() for p in self.database.propositions.itervalues()])
@@ -215,9 +215,9 @@ class LanguageModel:
         self.constructor_arity_indices = {}
         self.constructor_label_to_number = {}
         self.constructor_labels = []
-        for p in database.non_entails_axioms.itervalues():
+        for p in database.non_entails_axioms.values():
             u_arity = p.arity()
-            self.constructor_arity_indices[p.label]=range(self.total_constructor_arity, self.total_constructor_arity + u_arity)
+            self.constructor_arity_indices[p.label]=list(range(self.total_constructor_arity, self.total_constructor_arity + u_arity))
             self.total_constructor_arity += u_arity
             self.constructor_label_to_number[p.label]=len(self.constructor_label_to_number)
             self.constructor_labels.append(p.label)
@@ -227,7 +227,7 @@ class LanguageModel:
             self.constructor_labels.append(name)
 
         # a lookup table for the index into all the propositions of the label
-        self.label_to_number = {x.label:x.number for x in self.database.propositions.itervalues()}
+        self.label_to_number = {x.label:x.number for x in self.database.propositions.values()}
         for x in self.new_names:
             self.label_to_number[x] = -1  # all variables should always be included
 
@@ -248,7 +248,7 @@ class LanguageModel:
 
 
     def axiom_counts(self):
-        max_axiom_arity = max([p.arity() for p in self.database.non_entails_axioms.itervalues()])+1
+        max_axiom_arity = max([p.arity() for p in self.database.non_entails_axioms.values()])+1
         # out = [0 for x in range(max_axiom_arity)]
         # for p in self.database.non_entails_axioms.itervalues():
         #     out[p.arity()]+=1
@@ -430,7 +430,7 @@ class LanguageModel:
             if dictionary_merge(current, next_fit) is None: return None
 
         return current
-    
+
     def prop_applies_to_statement(self, tree, prop, context, vclass=None):
         return prop_applies_to_statement(tree, prop, context, vclass=vclass)
 
@@ -551,7 +551,7 @@ class SearchProblem:
         self.expand_threshold = 10;
         self.database = database
 
-        for p in database.propositions.itervalues():
+        for p in database.propositions.values():
             # if the unconstrained_arity is too hight, skip it
             # if not max_unconstrained_arity is None and p.unconstrained_arity()>max_unconstrained_arity: continue
             self.add(p)

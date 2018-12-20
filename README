@@ -10,7 +10,7 @@ run_script_ordered.py will attempt to search for proofs for all the Metamath pro
 timeout: 5
 num_passes: 10000
 search beam width: 20
-hyp bonus: 0 
+hyp bonus: 0
 Proofs are saved to searcher/proofs as soon as they are found.  The proofs that I found during my search are in searcher/proofs_baseline.
 
 write_all_proofs.py will generate a modified_set.mm module file, which consists of the proofs from set.mm, with the found proofs replaced.  This can then be fed into Metamath and verified using the commands
@@ -30,10 +30,13 @@ Step 0: (OS X only) deal with Accelerate and forking bug
 export VECLIB_MAXIMUM_THREADS=1
 #########
 
-Step 1: train gen and pred
+Step 1: train gen and pred. Neither of the training scripts exit automatically, so you
+will need to keyboard interrupt them at some point, preferably after the training
+rate decays to a sufficiently low value. All of these scripts may be run in parallel.
 #########
-python script_gen.py
-python script_pred.py
+python script_gen.py # Train the generative network
+python script_pred.py # Train the prediction network
+python save_language_model.py # Save a copy of the language model somewhere
 #########
 
 Step 2: set up the files for the nn interface
@@ -44,15 +47,13 @@ cp weights/gen/train.weights searcher/gen.weights
 cp weights/pred/train.parameters searcher/pred.parameters
 cp weights/pred/train.weights searcher/pred.weights
 #########
-NOTE: this will fail because the searcher currently expects payout to
-already exist.  Fix that.
 
-Step 3: save a copy of the language model somewhere by running
-#########
-python save_language_model.py
-#########
-
-Step 4: construct the payout data set and train the payout network
+Step 3: construct the payout data set and train the payout network
+The first script takes days, but is highly parallelizable. Chunks may be run on
+different machines, and multiprocessing can be enabled by changing the
+"withpool.Pool(None)" to "withpool.Pool(n)", where n is the desired number of
+processes.
+WARNING: multiprocessing support may crash Windows machines.
 #########
 python generate_payout_data_script.py
 python script_payout.py
@@ -61,6 +62,8 @@ cp weights/pred/train.weights searcher/payout.weights
 #########
 
 Step 5: run the proof search (hyp bonus should be set to 0.0 for consistency with the paper)
+The search will be much faster if you set "multi=True" in the searcher.run call, but this
+may break on Windows.
 #########
 python run_script_ordered.py
 #########

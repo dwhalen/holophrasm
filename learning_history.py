@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 
 # a utility function for the plotting
 def batch_mean(it,val,window):
@@ -26,7 +26,7 @@ def color_tuple(color, shade):
 class LearningHistory(object):
     def __init__(self, draw_plots=True):
         # defines a figure object, which we'll slowly update
-        print "initializing figure"
+        print("initializing figure")
         self.draw_plots = draw_plots
         if self.draw_plots: self.prep_plot()
 

@@ -9,7 +9,7 @@ from beam_search import *
 import os
 import sys
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 import data_utils5 as data_utils
 import nnlibrary as nn
 
@@ -31,7 +31,7 @@ else:
 
 
 class ProofInterface:
-    def __init__(self, lm, recalculate_props=False, directory='searcher'):
+    def __init__(self, lm, recalculate_props=False, skip_payout=False, directory='searcher'):
         self.lm = lm
 
         # load all the variables and parameters
@@ -46,10 +46,12 @@ class ProofInterface:
         self.pred_var = pred_model_run.Variables(self.pred_config)
         self.pred_var.load(directory+'/pred.weights')
 
-        self.payout_config = payout_model_run.Config(lm)
-        self.payout_config.load(directory+'/payout.parameters')
-        self.payout_var = payout_model_run.Variables(self.payout_config)
-        self.payout_var.load(directory+'/payout.weights')
+        self.skip_payout = skip_payout
+        if not skip_payout:
+            self.payout_config = payout_model_run.Config(lm)
+            self.payout_config.load(directory+'/payout.parameters')
+            self.payout_var = payout_model_run.Variables(self.payout_config)
+            self.payout_var.load(directory+'/payout.weights')
 
         # beam search interface
         self.bsi = gen_model_beam_search.BeamSearchInterface([self.gen_var]*GEN_ENSEMBLE)
@@ -57,11 +59,11 @@ class ProofInterface:
         # remember the answer so that we don't need to constantly recalculate it
         file_path = directory+'/pred_database'
         if os.path.isfile(file_path) and not recalculate_props:
-            print 'loading proposition vectors'
+            print('loading proposition vectors')
             with open(file_path, 'rb') as handle:
                 self.pred_database = pickle.load(handle)
         else:
-            print 'using proposition vectors at '+file_path
+            print('using proposition vectors at '+file_path)
             self.initialize_pred(file_path)
 
 
@@ -76,7 +78,7 @@ class ProofInterface:
             sys.stdout.write('\rvectorizing proposition '+str(i))
             sys.stdout.flush()
             self.pred_database.append(pred_model_run.get_prop_vector([self.pred_var]*PRED_CACHE_ENSEMBLE, prop))
-        print '\rdone adding propositions'
+        print('\rdone adding propositions')
         self.pred_database = np.stack(self.pred_database, axis=0)
 
         # save the database
@@ -84,6 +86,7 @@ class ProofInterface:
             pickle.dump(self.pred_database, handle)
 
     def payout(self, tree, context):
+        assert not self.skip_payout, "Attempted to evaluate payout on an interface without with skip_payout=True."
         return payout_model_run.get_payout([self.payout_var]*PAYOUT_ENSEMBLE, tree, context)
 
     def initialize_payout(self, context):
@@ -143,10 +146,10 @@ class ProofInterface:
         '''
         check to see wether the tree is tautologically true.
         We can do this *really* quickly, so we might as well.
-        
+
         There's a little redundency in that we calculate the
         viable props twice, but it's a pretty quick process.
-        
+
         Returns None if not a tautology, otherwise returns a
         label for a proposition that proves it immediately.
         '''
@@ -156,4 +159,3 @@ class ProofInterface:
             return None
         else:
             return tauts.pop()
-        
