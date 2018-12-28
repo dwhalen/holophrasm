@@ -8,3 +8,7 @@ searcher/pred_database
 lm
 weights/*
 payout_data_*
+
+Untitled.ipynb
+
+*.ipynb

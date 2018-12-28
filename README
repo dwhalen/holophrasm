@@ -18,8 +18,7 @@ write_all_proofs.py will generate a modified_set.mm module file, which consists 
 READ modified_set.mm
 VERIFY PROOF *
 
-There's a known bug involving outputting the proofs that assigns the same additional dummy variable to multiple set variables, breaking the disjointness condition.
-I think this is purely a problem with the proof writing, but I'm not confident, so I've excluded these proofs from my count of working proofs anyway.
+There's a known bug involving `dtrucor` ignoring the disjointness conditions, which has been fixed with a temporary hack. In case the bug applies more generally, you should not assume any proof is valid until metamath verifies modified_set.mm.
 
 #############################################
 
@@ -54,6 +53,8 @@ different machines, and multiprocessing can be enabled by changing the
 "withpool.Pool(None)" to "withpool.Pool(n)", where n is the desired number of
 processes.
 WARNING: multiprocessing support may crash Windows machines.
+WARNING: if generate_payout_data_script.py does not run correctly, it may leave
+files payout_data_* of size 0. These need to be deleted before rerunning the script.
 #########
 python generate_payout_data_script.py
 python script_payout.py

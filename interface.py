@@ -16,7 +16,12 @@ import nnlibrary as nn
 import constructor_list
 
 NUM_ALLOWED_CONSTRUCTORS = None
-DISALLOWED_PROPS = ['idi', 'dummylink']
+"""I'm not entirely sure why dtrucor causes such problems, but the solver seems
+to apply it even when it's not valid because of the disjointness conditions (note
+that dtrucor should never be pretty much never used in a proof). I suspect
+that the last-step search is ignoring the disjointness condition in some cases.
+For now, I'm just going to remove dtrucor from the search."""
+DISALLOWED_PROPS = ['idi', 'dummylink', 'dtrucor']
 PRED_ENSEMBLE = 1
 PRED_CACHE_ENSEMBLE = 1
 PAYOUT_ENSEMBLE = 1

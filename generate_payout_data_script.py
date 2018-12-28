@@ -5,7 +5,7 @@ import os
 import withpool
 
 text = file_contents()
-database = meta_math_database(text,n=40000, remember_proof_steps=True)
+database = meta_math_database(text,n=None, remember_proof_steps=True)
 print()
 lm = LanguageModel(database)
 
