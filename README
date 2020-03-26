@@ -1,7 +1,7 @@
 Holophrasm: a purely neural automated theorem prover for Metamath
 https://arxiv.org/abs/1608.02644
 
-To use the program, start by downloading the release, which includes the binary files for the language model and the trained model weights.  Then, from the root directory, using python 2.7, run
+To use the program, start by downloading the release, which includes the binary files for the language model and the trained model weights.  Then, from the root directory run
 
 python run_script_ordered.py
 python write_all_proofs.py
